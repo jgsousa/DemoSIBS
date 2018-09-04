@@ -3,10 +3,43 @@
   <head>
     <title>SIBS</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
+    <link rel='stylesheet' href='/stylesheets/sibs.css' />
+    <script src="/javascripts/sibs.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+          integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+          crossorigin="anonymous"></script>
   </head>
   <body>
     <p>Welcome SIBS Integration example</p>
-    <script src="https://test.oppwa.com/v1/paymentWidgets.js?checkoutId=<%= checkoutId %>"></script>
-    <form action="/result" class="paymentWidgets" data-brands="VISA MASTER AMEX"></form>
+    <b/>
+    Meio de pagamento: <select id="meios">
+        <option value="MBWAY" selected>MBWAY</option>
+        <option value="PAYPAL">Paypal</option>
+        <option value="VISA MASTER AMEX">Cartões</option>
+        <option value="SIBS_MULTIBANCO">Transferência bancária</option>
+    </select>
+    <div id="payment">
+
+    </div>
   </body>
+    <script>
+        var changeMethod = function (){
+            var payment = $('#payment');
+            payment.empty();
+            var select = $('#meios');
+            var valueSelected = select.val();
+            var script = '<script src="https://test.oppwa.com/v1/paymentWidgets.js?checkoutId=';
+            script = script + '<%= checkoutId %> ">' + "</" + "script>";
+            payment.append(script);
+
+            var form = '<form action="https://localhost:8030/result" class="paymentWidgets" data-brands="' + valueSelected +'"></form>';
+            payment.append(form);
+        }
+        $(document).ready(function(){
+            changeMethod();
+            $('#meios').change(function(evt){
+                changeMethod();
+            });
+        });
+    </script>
 </html>
