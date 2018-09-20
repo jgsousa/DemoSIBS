@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SIBS</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <form action="https://test.oppwa.com/v1/checkouts/<%= checkoutId %>/payment" method="POST">
+      <span>Confirm order with checkout ID <%= checkoutId %></span>
+      <input type="submit" value="Pay now" />
+    </form>
+  </body>
+</html>

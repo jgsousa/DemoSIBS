@@ -1,17 +1,13 @@
 var wpwlOptions = {
     style: "plain",
     locale: "pt",
-    billingAddress: {
-        country: "PT",
-        state: "",
-        city: "Lisboa",
-        street1: "Rua Maria",
-        street2: "",
-        postcode: "1500-441"
-    },
-    forceCardHolderEqualsBillingName: true,
     showCVVHint: true,
     brandDetection: true,
+    useSummaryPage: true,
+    onSaveTransactionData: function (data) {
+        console.log(data);
+        location.href = "https://localhost:8030/summary?checkoutId=" + data.ndc;
+    },
     onReady: function(){
         $(".wpwl-group-cardNumber").after($(".wpwl-group-brand").detach());
         $(".wpwl-group-cvv").after( $(".wpwl-group-cardHolder").detach());

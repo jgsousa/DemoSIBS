@@ -56,10 +56,15 @@ router.get('/', function(req, noderes, next) {
     postRequest.end();
 });
 
+router.get('/summary', function(req, res, next) {
+    var id = req.query.checkoutId;
+    res.render('summary', { checkoutId: id  });
+});
+
 router.get('/result', function(req, res, next) {
     var id = req.query.id;
     getResult(id, function(data){
-        res.render('result', {});
+        res.render('result', { result : data.result.description });
     });
 });
 
