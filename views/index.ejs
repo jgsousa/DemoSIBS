@@ -1,45 +1,60 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>SIBS</title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <link rel='stylesheet' href='/stylesheets/sibs.css' />
-    <script src="/javascripts/sibs.js"></script>
-    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
-          integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-          crossorigin="anonymous"></script>
-  </head>
-  <body>
-    <p>Welcome SIBS Integration example</p>
-    <b/>
-    Meio de pagamento: <select id="meios">
-        <option value="MBWAY" selected>MBWAY</option>
-        <option value="PAYPAL">Paypal</option>
-        <option value="VISA MASTER AMEX">Cartões</option>
-        <option value="SIBS_MULTIBANCO">Transferência bancária</option>
-    </select>
-    <div id="payment">
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="/stylesheets/style.css">
 
+  <title>SIBS Integration</title>
+</head>
+<body>
+  <h1>SIBS ATM Reference Generation</h1>
+  <b/>
+  <form>
+    <div class="form-group">
+      <label for="valor">Valor da referência</label>
+      <input type="number" step="0.01" class="form-control" id="valor" aria-describedby="valor" placeholder="Introduzir valor">
+      <label for="firstName">Primeiro nome</label>
+      <input type="text" class="form-control" id="firstName" aria-describedby="firstName" placeholder="Introduzir primeiro nome">
+      <label for="lastName">Último nome</label>
+      <input type="text" class="form-control" id="lastName" aria-describedby="lastName" placeholder="Introduzir último nome">
+      <label for="ordem">Ordem</label>
+      <input type="text" class="form-control" id="ordem" aria-describedby="ordem" placeholder="Introduzir número ordem">
     </div>
-  </body>
-    <script>
-        var changeMethod = function (){
-            var payment = $('#payment');
-            payment.empty();
-            var select = $('#meios');
-            var valueSelected = select.val();
-            var script = '<script src="https://test.oppwa.com/v1/paymentWidgets.js?checkoutId=';
-            script = script + '<%= checkoutId %> ">' + "</" + "script>";
-            payment.append(script);
-
-            var form = '<form action="https://localhost:8030/result" class="paymentWidgets" data-brands="' + valueSelected +'"></form>';
-            payment.append(form);
-        }
-        $(document).ready(function(){
-            changeMethod();
-            $('#meios').change(function(evt){
-                changeMethod();
+    <button type="input" class="btn btn-primary">Submeter</button>
+  </form>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script>
+    $(function() {
+        $("button.btn").click(function(e){
+            e.preventDefault();
+            var data = { referenceValue : $('#valor').val(),
+                        firstName : $('#firstName').val(),
+                        lastName : $('#lastName').val(),
+                        ordem : $('#ordem').val()
+            };
+            $.ajax({
+                type: "POST",
+                url: "/generateatm/",
+                contentType:"application/json; charset=utf-8",
+                dataType:"json",
+                data: JSON.stringify(data),
+                success: function(msg){
+                    alert("Referência: " + msg.pmtRefNtty + ' ' + msg.pmtRef);
+                },
+                error: function(){
+                    alert("failure");
+                }
             });
         });
-    </script>
+    });
+</script>
+</body>
 </html>

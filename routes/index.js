@@ -3,41 +3,46 @@ var router = express.Router();
 var https = require('https');
 var querystring = require('querystring');
 
-var getResult = function(id, callback){
-    var path='/v1/checkouts/' + id + '/payment';
-    path += '?authentication.userId=8a8294185332bbe60153375476c31527'
-    path += '&authentication.password=G5wP5TzF5k'
-    path += '&authentication.entityId=8a8294185332bbe601533754724914d9'
-    var options = {
-        port: 443,
-        host: 'test.oppwa.com',
-        path: path,
-        method: 'GET',
-    };
-    var postRequest = https.request(options, function(res) {
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            jsonRes = JSON.parse(chunk);
-            return callback(jsonRes);
-        });
-    });
-    postRequest.end();
+var sibsHost = process.env.SIBSHOST || "test.oppwa.com";
+var sibsEntityId = process.env.SIBSENTITYID || "8ac7a4c966aaa1f20166abf7b69d043f";
+var sibsPassword = process.env.SIBSPASSWORD || "Rr47eQesdW";
+var sibsUserId = process.env.SIBSUSERID || "8a8294185b674555015b7c1928e81736";
+var sibsPaymentEntity = process.env.SIBSPAYMENTENTY || "25002";
+
+var getInitialDate = function(){
+    return "2019-02-27T13:28:32.001+01:00";
 };
 
-/* GET home page. */
-router.get('/', function(req, noderes, next) {
-    var path='/v1/checkouts';
-    var data = querystring.stringify( {
-        'authentication.userId' : '8a8294185332bbe60153375476c31527',
-        'authentication.password' : 'G5wP5TzF5k',
-        'authentication.entityId' : '8a8294185332bbe601533754724914d9',
-        'amount' : '00.10',
-        'currency' : 'EUR',
-        'paymentType' : 'DB'
+var getExpireDate = function(days){
+    return "2019-03-02T13:28:32.001+01:00";
+};
+
+var getReference = function(amount, firstName, lastName, transactionId, callback){
+
+    var path='/v1/payments';
+
+    var data = querystring.stringify({
+        'authentication.userId': sibsUserId,
+        'authentication.entityId': sibsEntityId,
+        'authentication.password': sibsPassword,
+        'amount': amount,
+        'currency': 'EUR',
+        'paymentType': 'PA',
+        'paymentBrand': 'SIBS_MULTIBANCO',
+        'merchantTransactionId': transactionId,
+        'customParameters[SIBSMULTIBANCO_PtmntEntty]': sibsPaymentEntity,
+        'customParameters[SIBSMULTIBANCO_RefIntlDtTm]': getInitialDate(),
+        'customParameters[SIBSMULTIBANCO_RefLmtDtTm]': getExpireDate(3),
+        'customer.ip': '123.123.123.123',
+        'customer.surname': lastName,
+        'customer.givenName': firstName,
+        'billing.country': 'PT',
+        'shopperResultUrl': 'https://test/'
     });
+
     var options = {
         port: 443,
-        host: 'test.oppwa.com',
+        host: sibsHost,
         path: path,
         method: 'POST',
         headers: {
@@ -49,25 +54,24 @@ router.get('/', function(req, noderes, next) {
         res.setEncoding('utf8');
         res.on('data', function (chunk) {
             jsonRes = JSON.parse(chunk);
-            noderes.render('index', {checkoutId: jsonRes.id});
+            return callback(jsonRes.resultDetails);
         });
     });
     postRequest.write(data);
     postRequest.end();
+};
+
+/* GET home page. */
+router.get('/', function(req, noderes, next) {
+    noderes.render('index', {});
 });
 
-router.get('/summary', function(req, res, next) {
-    var id = req.query.checkoutId;
-    res.render('summary', { checkoutId: id  });
-});
-
-router.get('/result', function(req, res, next) {
-    var id = req.query.id;
-    getResult(id, function(data){
-        res.render('result', { result : data.result.description });
+router.post('/generateatm', function(req, res, next) {
+    var body = req.body;
+    getReference(body.referenceValue, body.firstName, body.lastName,
+        body.ordem, function(data){
+            res.json(data)
     });
 });
-
-
 
 module.exports = router;

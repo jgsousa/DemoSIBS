@@ -1,8 +1,16 @@
 body {
-  padding: 50px;
+  padding: 30px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
   color: #00B7FF;
+}
+
+.form-group {
+  max-width: 30%;
+}
+
+.form-group input{
+  margin-bottom: 10px;
 }

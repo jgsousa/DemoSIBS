@@ -32,7 +32,7 @@ var httpsServer = https.createServer(credentials, app);
  * Listen on provided port, on all network interfaces.
  */
 
-httpsServer.listen("8030");
+httpsServer.listen(port);
 httpsServer.on('listening', onListening);
 httpsServer.on('error', onError);
 
