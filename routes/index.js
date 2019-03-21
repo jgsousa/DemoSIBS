@@ -10,11 +10,14 @@ var sibsUserId = process.env.SIBSUSERID || "8a8294185b674555015b7c1928e81736";
 var sibsPaymentEntity = process.env.SIBSPAYMENTENTY || "25002";
 
 var getInitialDate = function(){
-    return "2019-02-27T13:28:32.001+01:00";
+    let date = new Date().toISOString();
+    return date.replace("Z","+01:00");
 };
 
 var getExpireDate = function(days){
-    return "2019-03-02T13:28:32.001+01:00";
+    let date = new Date();
+    date.setTime(date.getTime() + days * 86400000 );
+    return date.toISOString().replace("Z","+01:00");
 };
 
 var getReference = function(amount, firstName, lastName, transactionId, callback){
